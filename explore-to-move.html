@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Explore to Move | Bolton Summit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --max: 1000px;
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --bg: #f4efe6;
+      --bg2: #ebe3d5;
+      --fg: #2a2118;
+      --muted: rgba(42,33,24,.55);
+      --accent: #4a6e30;
+      --accent2: #8a5a28;
+      --card: rgba(255,252,246,.85);
+      --stroke: rgba(42,33,24,.09);
+      --shadow: 0 8px 40px rgba(42,33,24,.11);
+      --shadow2: 0 3px 16px rgba(42,33,24,.08);
+      --radius: 18px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      color: var(--fg);
+      background: var(--bg);
+      overflow-x: hidden;
+      line-height: 1.7;
+    }
+
+    /* ---- TEXTURE BACKGROUND ---- */
+    body::before {
+      content: "";
+      position: fixed; inset: 0; z-index: -1;
+      background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Ccircle cx='1' cy='1' r='.7' fill='rgba(74,110,48,.06)'/%3E%3C/svg%3E"),
+        radial-gradient(ellipse 80vw 60vh at 10% 0%, rgba(235,227,213,.9) 0%, transparent 70%),
+        radial-gradient(ellipse 60vw 50vh at 90% 60%, rgba(138,90,40,.05) 0%, transparent 65%);
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      backdrop-filter: blur(20px) saturate(1.4);
+      background: rgba(244,239,230,.85);
+      border-bottom: 1px solid var(--stroke);
+    }
+    .nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 28px;
+      height: 62px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+    }
+    .nav-brand span { color: var(--accent); }
+    .nav-cta {
+      display: inline-flex; align-items: center;
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(74,110,48,.30);
+      background: rgba(74,110,48,.10);
+      font-family: 'DM Mono', monospace;
+      font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--accent); text-decoration: none;
+      transition: all .2s var(--ease);
+    }
+    .nav-cta:hover { background: rgba(74,110,48,.20); transform: translateY(-1px); }
+
+    /* ---- LAYOUT ---- */
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 28px; }
+
+    /* ---- HERO ---- */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 120px 0 80px;
+    }
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px; letter-spacing: .24em; text-transform: uppercase;
+      color: var(--accent);
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 28px;
+      opacity: 0; animation: fadeUp .8s var(--ease) .1s forwards;
+    }
+    .hero-eyebrow::before {
+      content: ""; display: block; width: 28px; height: 1px;
+      background: var(--accent);
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(48px, 7vw, 88px);
+      font-weight: 400;
+      line-height: 1.03;
+      letter-spacing: -.01em;
+      color: var(--fg);
+      max-width: 14ch;
+      opacity: 0; animation: fadeUp .9s var(--ease) .2s forwards;
+    }
+    .hero h1 em { font-style: italic; color: var(--accent2); }
+    .hero-sub {
+      margin-top: 28px;
+      font-size: 18px;
+      color: rgba(42,33,24,.72);
+      max-width: 46ch;
+      line-height: 1.6;
+      opacity: 0; animation: fadeUp .9s var(--ease) .35s forwards;
+    }
+    .hero-actions {
+      margin-top: 36px;
+      display: flex; gap: 12px; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp .9s var(--ease) .48s forwards;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 26px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+      text-decoration: none;
+      box-shadow: 0 6px 24px rgba(74,110,48,.28);
+      transition: all .2s var(--ease);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(74,110,48,.36); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 26px;
+      border-radius: 999px;
+      border: 1.5px solid var(--stroke);
+      background: var(--card);
+      color: var(--fg);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+      text-decoration: none;
+      transition: all .2s var(--ease);
+    }
+    .btn-ghost:hover { border-color: rgba(74,110,48,.30); transform: translateY(-2px); }
+
+    /* hero scroll hint */
+    .scroll-hint {
+      margin-top: 64px;
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0; animation: fadeUp .8s var(--ease) .7s forwards;
+    }
+    .scroll-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(180deg, var(--accent) 0%, transparent 100%);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+    /* ---- DIVIDER ---- */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--stroke) 30%, var(--stroke) 70%, transparent);
+      margin: 0;
+    }
+
+    /* ---- SECTIONS ---- */
+    section { padding: 100px 0; }
+    section.tight { padding: 72px 0; }
+
+    .label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 18px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .label::before {
+      content: ""; display: block; width: 20px; height: 1px; background: var(--accent);
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 4.5vw, 52px);
+      font-weight: 400;
+      line-height: 1.1;
+      letter-spacing: -.01em;
+      color: var(--fg);
+      margin-bottom: 20px;
+    }
+    .section-title em { font-style: italic; color: var(--accent2); }
+
+    .body-text {
+      font-size: 17px;
+      color: rgba(42,33,24,.78);
+      line-height: 1.72;
+      max-width: 58ch;
+    }
+    .body-text + .body-text { margin-top: 16px; }
+
+    /* ---- CORE MESSAGE ---- */
+    .core-message {
+      background: rgba(74,110,48,.07);
+      border: 1px solid rgba(74,110,48,.18);
+      border-radius: var(--radius);
+      padding: 40px 44px;
+      margin-top: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .core-message::before {
+      content: "";
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      border-radius: 0 2px 2px 0;
+    }
+    .core-message p {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(22px, 3vw, 32px);
+      font-style: italic;
+      color: var(--fg);
+      line-height: 1.3;
+    }
+    .core-message .attribution {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 14px;
+    }
+
+    /* ---- ARC (STUCK → MOVING) ---- */
+    .arc {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 0;
+      align-items: center;
+      margin-top: 56px;
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      overflow: hidden;
+    }
+    .arc-step {
+      padding: 36px 28px;
+      text-align: center;
+    }
+    .arc-step.from { background: rgba(138,90,40,.06); }
+    .arc-step.to   { background: rgba(74,110,48,.08); }
+    .arc-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .arc-word {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(22px, 2.5vw, 30px);
+      color: var(--fg);
+      margin-bottom: 8px;
+    }
+    .arc-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .arc-arrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 18px;
+      color: rgba(74,110,48,.40);
+      padding: 0 8px;
+      flex-shrink: 0;
+    }
+
+    /* ---- WHAT WE DON'T DO ---- */
+    .not-this {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 48px;
+    }
+    .not-card, .yes-card {
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      position: relative;
+    }
+    .not-card {
+      background: rgba(42,33,24,.04);
+      border: 1px solid rgba(42,33,24,.08);
+    }
+    .yes-card {
+      background: rgba(74,110,48,.08);
+      border: 1px solid rgba(74,110,48,.18);
+    }
+    .card-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px; letter-spacing: .22em; text-transform: uppercase;
+      margin-bottom: 14px;
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .not-card .card-tag { color: var(--muted); background: rgba(42,33,24,.07); }
+    .yes-card .card-tag { color: var(--accent); background: rgba(74,110,48,.12); }
+    .card-items { list-style: none; }
+    .card-items li {
+      font-size: 15px;
+      color: rgba(42,33,24,.78);
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(42,33,24,.06);
+      line-height: 1.5;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .card-items li:last-child { border-bottom: none; }
+    .card-items li::before {
+      content: "—";
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .yes-card .card-items li::before { color: var(--accent); content: "→"; }
+
+    /* ---- EXPERIENCE FEEL ---- */
+    .experience-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 48px;
+    }
+    .exp-card {
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      padding: 28px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .exp-card::after {
+      content: "";
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      opacity: .4;
+    }
+    .exp-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px; letter-spacing: .18em;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .exp-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 19px;
+      color: var(--fg);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+    .exp-body {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ---- PRINCIPLES ---- */
+    .principles {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 48px;
+    }
+    .principle {
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      border-radius: 14px;
+      padding: 24px 22px;
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .principle-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: rgba(74,110,48,.10);
+      border: 1px solid rgba(74,110,48,.18);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 15px;
+    }
+    .principle-text h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px; font-weight: 400;
+      color: var(--fg);
+      margin-bottom: 4px;
+    }
+    .principle-text p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    /* ---- NOAH ---- */
+    .noah-section {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .noah-img-wrap {
+      aspect-ratio: 3/4;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      background: var(--bg2);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .noah-img-placeholder {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+      padding: 20px;
+    }
+    .noah-img-wrap img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .noah-details {
+      display: flex; flex-direction: column; gap: 16px;
+      margin-top: 28px;
+    }
+    .noah-detail {
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .detail-dot {
+      width: 8px; height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      flex-shrink: 0;
+      margin-top: 7px;
+    }
+    .detail-text { font-size: 15px; color: rgba(42,33,24,.78); line-height: 1.55; }
+
+    /* ---- VISION ---- */
+    .vision-track {
+      display: flex;
+      gap: 0;
+      margin-top: 48px;
+      position: relative;
+    }
+    .vision-track::before {
+      content: "";
+      position: absolute; left: 20px; top: 24px; bottom: 24px;
+      width: 1.5px;
+      background: linear-gradient(180deg, var(--accent) 0%, rgba(74,110,48,.10) 100%);
+    }
+    .vision-item {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 16px;
+      padding: 16px 0;
+    }
+    .vision-dot-wrap { display: flex; justify-content: center; padding-top: 4px; }
+    .vision-dot {
+      width: 10px; height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+      box-shadow: 0 0 0 4px rgba(74,110,48,.14);
+      flex-shrink: 0;
+      position: relative; z-index: 1;
+    }
+    .vision-dot.dim {
+      background: rgba(74,110,48,.35);
+      box-shadow: 0 0 0 4px rgba(74,110,48,.07);
+    }
+    .vision-content h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 19px; font-weight: 400;
+      color: var(--fg);
+      margin-bottom: 5px;
+    }
+    .vision-content p {
+      font-size: 14px; color: var(--muted); line-height: 1.6; margin: 0;
+    }
+
+    /* ---- CLOSING ---- */
+    .closing {
+      text-align: center;
+      padding: 120px 0;
+      position: relative;
+    }
+    .closing::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(74,110,48,.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .closing-line {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(36px, 5.5vw, 68px);
+      font-weight: 400;
+      line-height: 1.1;
+      color: var(--fg);
+      margin-bottom: 16px;
+    }
+    .closing-line em { font-style: italic; color: var(--accent); }
+    .closing-sub {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 44ch;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+    }
+    .closing-brand {
+      margin-top: 56px;
+      padding-top: 32px;
+      border-top: 1px solid var(--stroke);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .closing-brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px; color: var(--fg);
+    }
+    .closing-brand-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px; letter-spacing: .22em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .closing-brand-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+
+    /* ---- REVEAL ANIMATION ---- */
+    .reveal {
+      opacity: 0; transform: translateY(18px);
+      transition: opacity .7s var(--ease), transform .7s var(--ease);
+    }
+    .reveal.show { opacity: 1; transform: none; }
+
+    /* ---- KEYFRAMES ---- */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- MOBILE ---- */
+    @media (max-width: 700px) {
+      .wrap { padding: 0 18px; }
+      .hero { padding: 100px 0 60px; }
+      .hero h1 { font-size: clamp(40px, 10vw, 56px); }
+      .arc { grid-template-columns: 1fr; }
+      .arc-arrow { display: none; }
+      .arc-step { padding: 24px 20px; }
+      .not-this { grid-template-columns: 1fr; }
+      .experience-grid { grid-template-columns: 1fr; }
+      .principles { grid-template-columns: 1fr; }
+      .noah-section { grid-template-columns: 1fr; }
+      .noah-img-wrap { aspect-ratio: 4/3; max-height: 320px; }
+      section { padding: 72px 0; }
+      .core-message { padding: 28px 24px; }
+      .closing { padding: 80px 0; }
+    }
+
+    @media (min-width: 701px) and (max-width: 900px) {
+      .experience-grid { grid-template-columns: repeat(2, 1fr); }
+      .principles { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="#">
+        Bolton Summit &nbsp;/&nbsp; <span>Explore to Move</span>
+      </a>
+      <a class="nav-cta" href="#contact">Get in touch</a>
+    </div>
+  </nav>
+
+  <!-- ============ HERO ============ -->
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-eyebrow">Explore to Move &nbsp;·&nbsp; Bolton Summit</div>
+      <h1>You're not stuck.<br><em>You can move.</em></h1>
+      <p class="hero-sub">A human development experience for people who feel burnt out, disconnected, or lost in overthinking — and are ready to find a way forward.</p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="#experience">See the experience</a>
+        <a class="btn-ghost" href="#noah">Meet Noah</a>
+      </div>
+      <div class="scroll-hint">
+        <div class="scroll-line"></div>
+        Scroll to explore
+      </div>
+    </section>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ============ CORE MESSAGE ============ -->
+  <div class="wrap">
+    <section id="about" class="tight">
+      <div class="label reveal">The idea</div>
+      <h2 class="section-title reveal">This is not about<br>the outdoors.</h2>
+      <p class="body-text reveal">Explore to Move exists for people who feel like something is off — like they've been spinning in place, unable to get out of their own heads or move toward what actually matters to them.</p>
+      <p class="body-text reveal">Nature is the setting. But it's not the point.</p>
+
+      <div class="core-message reveal">
+        <p>People are not looking for the activity. They are looking for what the experience changes for them.</p>
+        <div class="attribution">— The core belief behind every experience</div>
+      </div>
+    </section>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ============ NOT THIS / YES THIS ============ -->
+  <div class="wrap">
+    <section class="tight">
+      <div class="label reveal">What this is</div>
+      <h2 class="section-title reveal">A reset designed<br>to help you <em>move forward.</em></h2>
+      <p class="body-text reveal">Most people don't need more information. They need space — to slow down, get out of their routine, and reconnect with what they actually think and want.</p>
+
+      <div class="not-this reveal">
+        <div class="not-card">
+          <span class="card-tag">Not this</span>
+          <ul class="card-items">
+            <li>A camping or hiking trip</li>
+            <li>An outdoor adventure for its own sake</li>
+            <li>A wellness retreat full of buzzwords</li>
+            <li>A productivity hack or self-help seminar</li>
+            <li>Something you need to "figure out" to attend</li>
+          </ul>
+        </div>
+        <div class="yes-card">
+          <span class="card-tag">This</span>
+          <ul class="card-items">
+            <li>A real solution to internal stuckness</li>
+            <li>Small group, fully curated — you just show up</li>
+            <li>Time in nature that creates space to think clearly</li>
+            <li>Meaningful conversations with real people</li>
+            <li>Intentional challenges that build honest confidence</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ============ THE ARC ============ -->
+  <div class="wrap">
+    <section class="tight">
+      <div class="label reveal">The transformation</div>
+      <h2 class="section-title reveal">Stuck → Calm → <em>Moving.</em></h2>
+      <p class="body-text reveal">The arc of every experience is simple. You arrive carrying whatever you've been carrying. You leave with more clarity, more calm, and a clearer sense of what to do next.</p>
+
+      <div class="arc reveal">
+        <div class="arc-step from">
+          <div class="arc-num">Where you are</div>
+          <div class="arc-word">Stuck</div>
+          <div class="arc-desc">Overwhelmed. Overthinking. Disconnected from what matters.</div>
+        </div>
+        <div class="arc-arrow">→</div>
+        <div class="arc-step">
+          <div class="arc-num">The shift</div>
+          <div class="arc-word">Calm</div>
+          <div class="arc-desc">Slowed down. Grounded. Present. Space to actually think.</div>
+        </div>
+        <div class="arc-arrow">→</div>
+        <div class="arc-step to">
+          <div class="arc-num">Where you go</div>
+          <div class="arc-word">Moving</div>
+          <div class="arc-desc">Clear. Capable. Taking action on what's actually yours to do.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ============ THE EXPERIENCE ============ -->
+  <div class="wrap">
+    <section id="experience">
+      <div class="label reveal">What it feels like</div>
+      <h2 class="section-title reveal">An experience<br>you don't have to plan.</h2>
+      <p class="body-text reveal">Every detail is taken care of. You arrive, and the experience unfolds. Small group. Real conversations. Time in nature that does something to your thinking. You leave different than you came.</p>
+
+      <div class="experience-grid">
+        <div class="exp-card reveal">
+          <div class="exp-num">01</div>
+          <div class="exp-title">Small by design</div>
+          <div class="exp-body">Around 10–12 people. Small enough that everyone is known. Big enough for real variety in perspective.</div>
+        </div>
+        <div class="exp-card reveal">
+          <div class="exp-num">02</div>
+          <div class="exp-title">Fully curated</div>
+          <div class="exp-body">You don't plan anything. The experience is designed end-to-end — you just show up and engage.</div>
+        </div>
+        <div class="exp-card reveal">
+          <div class="exp-num">03</div>
+          <div class="exp-title">Time in nature</div>
+          <div class="exp-body">Coast, forest, mountains — wherever the setting best serves what the group needs. Nature does something to perspective that a room can't.</div>
+        </div>
+        <div class="exp-card reveal">
+          <div class="exp-num">04</div>
+          <div class="exp-title">Real conversations</div>
+          <div class="exp-body">Not small talk. Honest, grounded conversations about what's actually going on — and where people want to go.</div>
+        </div>
+        <div class="exp-card reveal">
+          <div class="exp-num">05</div>
+          <div class="exp-title">Intentional challenges</div>
+          <div class="exp-body">Moments designed to prove something to yourself. Not extreme — honest. The kind that leave a quiet mark.</div>
+        </div>
+        <div class="exp-card reveal">
+          <div class="exp-num">06</div>
+          <div class="exp-title">Space to think clearly</div>
+          <div class="exp-body">Away from notifications, obligations, and noise. The kind of clarity that only comes when you actually stop.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ============ PRINCIPLES ============ -->
+  <div class="wrap">
+    <section class="tight">
+      <div class="label reveal">Teaching philosophy</div>
+      <h2 class="section-title reveal">Guided by principles,<br>not <em>activities.</em></h2>
+      <p class="body-text reveal">Every experience is built around a core curriculum — a set of ideas that hold regardless of the setting or the group. The activities change. The philosophy doesn't.</p>
+
+      <div class="principles">
+        <div class="principle reveal">
+          <div class="principle-icon">⏳</div>
+          <div class="principle-text">
+            <h4>There is time.</h4>
+            <p>Panic shrinks our thinking. When people slow down and realize they have more time than they feel — clarity follows almost immediately.</p>
+          </div>
+        </div>
+        <div class="principle reveal">
+          <div class="principle-icon">🧭</div>
+          <div class="principle-text">
+            <h4>You are capable.</h4>
+            <p>Most people underestimate themselves because they haven't been given the right environment to find out. We build that environment.</p>
+          </div>
+        </div>
+        <div class="principle reveal">
+          <div class="principle-icon">🌿</div>
+          <div class="principle-text">
+            <h4>Your life is yours.</h4>
+            <p>Ownership is the starting point of forward movement. We help people reconnect with the fact that their path is genuinely theirs to shape.</p>
+          </div>
+        </div>
+        <div class="principle reveal">
+          <div class="principle-icon">→</div>
+          <div class="principle-text">
+            <h4>Movement creates clarity.</h4>
+            <p>You don't think your way out. You move your way out. Action — even small — produces the clarity that more thinking never will.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ============ NOAH ============ -->
+  <div class="wrap">
+    <section id="noah">
+      <div class="noah-section">
+        <div class="noah-img-wrap reveal">
+          <img src="assets/images/dance.JPG" alt="Noah Bolton" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
+          <div class="noah-img-placeholder" style="display:none">
+            Noah Bolton<br>— photo —
+          </div>
+        </div>
+        <div>
+          <div class="label reveal">The guide</div>
+          <h2 class="section-title reveal">Noah Bolton</h2>
+          <p class="body-text reveal">I'm a biomedical engineering student at Cal Poly SLO, and I've spent the last several years building environments where people challenge themselves, connect deeply, and move forward.</p>
+          <p class="body-text reveal">Explore to Move grew out of real work — leading hundreds of students through outdoor experiences as part of Field Studies Collective, and watching what actually changes people. It's not the mountain. It's the moment they realize they're capable of more than they thought.</p>
+
+          <div class="noah-details">
+            <div class="noah-detail reveal">
+              <div class="detail-dot"></div>
+              <div class="detail-text">Biomedical engineering student, Cal Poly San Luis Obispo</div>
+            </div>
+            <div class="noah-detail reveal">
+              <div class="detail-dot"></div>
+              <div class="detail-text">Founder of Field Studies Collective — 600+ student outdoor community</div>
+            </div>
+            <div class="noah-detail reveal">
+              <div class="detail-dot"></div>
+              <div class="detail-text">Guide, facilitator, and builder — not a speaker or a coach</div>
+            </div>
+            <div class="noah-detail reveal">
+              <div class="detail-dot"></div>
+              <div class="detail-text">Building this through real-world experience, not theory</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ============ VISION ============ -->
+  <div class="wrap">
+    <section class="tight">
+      <div class="label reveal">Where this is going</div>
+      <h2 class="section-title reveal">Built in the field.<br><em>Growing from there.</em></h2>
+      <p class="body-text reveal">Explore to Move is being developed through direct experience — tested, refined, and expanded as we learn what actually works for people. This is the experience arm of Bolton Summit's broader mission.</p>
+
+      <div class="vision-track">
+        <div style="display:flex; flex-direction:column; width:100%;">
+          <div class="vision-item reveal">
+            <div class="vision-dot-wrap"><div class="vision-dot"></div></div>
+            <div class="vision-content">
+              <h4>Now — Field Studies</h4>
+              <p>Being tested and refined through Field Studies Collective at Cal Poly. Real groups, real experiences, real feedback.</p>
+            </div>
+          </div>
+          <div class="vision-item reveal">
+            <div class="vision-dot-wrap"><div class="vision-dot"></div></div>
+            <div class="vision-content">
+              <h4>Near — Retreats &amp; workshops</h4>
+              <p>Evolving into curated multi-day retreats and single-day workshops for small groups ready for a genuine reset.</p>
+            </div>
+          </div>
+          <div class="vision-item reveal">
+            <div class="vision-dot-wrap"><div class="vision-dot dim"></div></div>
+            <div class="vision-content">
+              <h4>Long-term — Broader experiences</h4>
+              <p>A growing set of offerings to help more people live more intentional, connected, and meaningful lives.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ============ BOLTON SUMMIT TIE-IN ============ -->
+  <div class="wrap">
+    <section class="tight">
+      <div class="label reveal">Bolton Summit</div>
+      <h2 class="section-title reveal">Explore · Perform · <em>Belong.</em></h2>
+      <p class="body-text reveal">Explore to Move is the experience arm of Bolton Summit — a broader personal brand and philosophy built around the belief that people grow most when they're challenged, connected, and given space to reflect.</p>
+      <p class="body-text reveal">The Summit is about reaching something. The exploration is how you get there.</p>
+    </section>
+  </div>
+
+  <!-- ============ CLOSING ============ -->
+  <div class="wrap" id="contact">
+    <section class="closing">
+      <div class="closing-line reveal">Step out of your routine.</div>
+      <div class="closing-line reveal">Step into something <em>real.</em></div>
+      <p class="closing-sub reveal">This is a place to reset, reconnect, and move forward. You don't have to have it figured out. You just have to show up.</p>
+      <div class="hero-actions" style="justify-content:center;" class="reveal">
+        <a class="btn-primary reveal" href="mailto:noah@boltonsummit.com">Get in touch</a>
+        <a class="btn-ghost reveal" href="index.html">← Back to Bolton Summit</a>
+      </div>
+
+      <div class="closing-brand reveal">
+        <div class="closing-brand-name">Bolton Summit</div>
+        <div class="closing-brand-tag">Explore · Perform · Belong</div>
+        <div class="closing-brand-sub">Explore to Move — Experience Arm</div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // scroll reveal
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("show"); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+  </script>
+</body>
+</html>
